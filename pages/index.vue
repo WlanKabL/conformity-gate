@@ -1,5 +1,8 @@
 <template>
     <div class="relative min-h-screen overflow-hidden bg-black">
+        <!-- Background audio -->
+        <audio ref="audioElement" src="/assets/vecnalives.mp3" loop autoplay />
+
         <!-- Animated background -->
         <div class="fixed inset-0 bg-gradient-to-b from-black via-red-950/5 to-black"></div>
 
@@ -19,12 +22,15 @@
             style="z-index: 1"
         ></canvas>
 
+        <!-- Header -->
+        <AppHeader />
+
         <!-- Main content -->
         <div
-            class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-20"
+            class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-20 pt-32"
         >
             <div class="max-w-6xl w-full text-center space-y-20">
-                <!-- Title with Stranger Things font -->
+                <!-- Logo/Title -->
                 <div>
                     <h1
                         ref="titleElement"
@@ -39,66 +45,14 @@
                     </p>
                 </div>
 
-                <!-- Countdown - minimal style -->
-                <div class="relative max-w-4xl mx-auto">
-                    <div class="flex items-center justify-center gap-3 sm:gap-6 md:gap-12">
-                        <!-- Days -->
-                        <div class="countdown-unit">
-                            <div class="countdown-number">{{ String(days).padStart(2, "0") }}</div>
-                            <div class="countdown-label">Days</div>
-                        </div>
-
-                        <div class="countdown-separator">:</div>
-
-                        <!-- Hours -->
-                        <div class="countdown-unit">
-                            <div class="countdown-number">{{ String(hours).padStart(2, "0") }}</div>
-                            <div class="countdown-label">Hours</div>
-                        </div>
-
-                        <div class="countdown-separator">:</div>
-
-                        <!-- Minutes -->
-                        <div class="countdown-unit">
-                            <div class="countdown-number">
-                                {{ String(minutes).padStart(2, "0") }}
-                            </div>
-                            <div class="countdown-label">Minutes</div>
-                        </div>
-
-                        <div class="countdown-separator">:</div>
-
-                        <!-- Seconds -->
-                        <div class="countdown-unit">
-                            <div class="countdown-number">
-                                {{ String(seconds).padStart(2, "0") }}
-                            </div>
-                            <div class="countdown-label">Seconds</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Description - clean and minimal -->
-                <div class="max-w-3xl mx-auto space-y-6 text-gray-400">
-                    <p class="text-base sm:text-lg md:text-xl leading-relaxed">
-                        This countdown is just a placeholder. Before it reaches zero, I'm building
-                        something real here. Not just another "touch grass" message, but an actual
-                        website.
-                    </p>
-
-                    <p class="text-sm sm:text-base md:text-lg leading-relaxed opacity-75">
-                        A support group for Conformity Gate believers. A chatroom where we can
-                        comfort each other if we turn out to be wrong (which won't happen, trust
-                        me). The complete evidence chain from every episode pointing to Episode 9. A
-                        timeline of Stranger Things from beginning to end. A submission area for new
-                        clues. And when the countdown ends: a global status check whether Netflix
-                        has released the new episode. If netflix.com crashes, just check here.
-                    </p>
-
-                    <p class="text-xs sm:text-sm md:text-base leading-relaxed opacity-50 italic">
-                        Racing against the clock to finish the Conformity Gate support group before
-                        the countdown hits zero. See you on the other side.
-                    </p>
+                <!-- Countdown or Result -->
+                <div>
+                    <CountdownDisplay
+                        v-if="!countdownEnded"
+                        :targetDate="targetDate"
+                        @countdownEnd="handleCountdownEnd"
+                    />
+                    <ResultDisplay v-else :status="episodeStatus" />
                 </div>
             </div>
         </div>
@@ -106,38 +60,38 @@
 </template>
 
 <script setup lang="ts">
-const days = ref(0);
-const hours = ref(0);
-const minutes = ref(0);
-const seconds = ref(0);
 const lightningCanvas = ref<HTMLCanvasElement | null>(null);
 const titleElement = ref<HTMLElement | null>(null);
+const episodeStatus = ref<string | false | null>(null);
 
 // 8. Januar 2026, 02:00 Uhr (Deine Zeitzone - CET/CEST)
-// Das entspricht 7. Januar 2026, 18:00 Uhr PT (Pacific Time)
 const targetDate = new Date("2026-01-08T02:00:00").getTime();
 
-const updateCountdown = () => {
-    const now = new Date().getTime();
-    const distance = targetDate - now;
+// Computed: Check if countdown has ended
+const countdownEnded = computed(() => new Date().getTime() >= targetDate);
 
-    if (distance > 0) {
-        days.value = Math.floor(distance / (1000 * 60 * 60 * 24));
-        hours.value = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        minutes.value = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        seconds.value = Math.floor((distance % (1000 * 60)) / 1000);
-    } else {
-        days.value = 0;
-        hours.value = 0;
-        minutes.value = 0;
-        seconds.value = 0;
+const handleCountdownEnd = async () => {
+    // Fetch episode status from API
+    await fetchEpisodeStatus();
+};
+
+const fetchEpisodeStatus = async () => {
+    try {
+        const response = await fetch("/api/episode-status");
+        const data = await response.json();
+        episodeStatus.value = data.released;
+    } catch (error) {
+        console.error("Failed to fetch episode status:", error);
+        episodeStatus.value = null; // Show waiting state on error
     }
 };
 
-onMounted(() => {
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+// If countdown already ended, fetch status immediately
+if (countdownEnded.value) {
+    fetchEpisodeStatus();
+}
 
+onMounted(() => {
     // Konami Code Easter Egg
     let konamiCode: string[] = [];
     const konamiSequence = [
@@ -329,13 +283,6 @@ useHead({
     font-style: normal;
 }
 
-@font-face {
-    font-family: "Benguiat";
-    src: url("/assets/Benguiat Bold.ttf") format("truetype");
-    font-weight: bold;
-    font-style: normal;
-}
-
 /* Scanlines effect */
 .scanlines {
     background: repeating-linear-gradient(
@@ -372,68 +319,6 @@ useHead({
             0 0 30px rgba(220, 38, 38, 1),
             0 0 60px rgba(220, 38, 38, 0.7),
             0 0 90px rgba(220, 38, 38, 0.5);
-    }
-}
-
-/* Countdown styling - minimal and clean */
-.countdown-unit {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.countdown-number {
-    font-family: "Benguiat", "Courier New", monospace;
-    font-size: clamp(3rem, 8vw, 6rem);
-    font-weight: 700;
-    color: #dc2626;
-    line-height: 1;
-    text-shadow:
-        0 0 20px rgba(220, 38, 38, 0.6),
-        0 0 40px rgba(220, 38, 38, 0.3);
-    animation: numberPulse 2s ease-in-out infinite;
-}
-
-.countdown-separator {
-    font-family: "Benguiat", "Courier New", monospace;
-    font-size: clamp(2rem, 6vw, 4rem);
-    font-weight: 700;
-    color: #991b1b;
-    line-height: 1;
-    opacity: 0.5;
-    margin: 0 -0.5rem;
-    animation: separatorBlink 2s ease-in-out infinite;
-}
-
-.countdown-label {
-    font-family: "Courier New", monospace;
-    font-size: clamp(0.6rem, 1.5vw, 0.875rem);
-    font-weight: 400;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-}
-
-@keyframes numberPulse {
-    0%,
-    100% {
-        opacity: 0.9;
-    }
-    50% {
-        opacity: 1;
-    }
-}
-
-@keyframes separatorBlink {
-    0%,
-    45%,
-    55%,
-    100% {
-        opacity: 0.5;
-    }
-    50% {
-        opacity: 0.2;
     }
 }
 

@@ -1,148 +1,91 @@
 <template>
     <header
-        class="sticky top-0 z-50 border-b border-gray-300 bg-white/80 backdrop-blur supports-backdrop-filter:bg-white/60 dark:border-gray-900 dark:bg-black/80 dark:supports-backdrop-filter:bg-black/60"
+        class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-red-900/30"
     >
-        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <NuxtLink to="/" class="flex items-center gap-3 transition-opacity hover:opacity-80">
-                <div
-                    class="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-red-500 to-orange-600"
-                >
-                    <span class="text-2xl font-bold text-white">🎲</span>
-                </div>
-                <span class="hidden text-xl font-bold text-gray-900 dark:text-white sm:block"
-                    >Universal Jenga</span
-                >
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <NuxtLink to="/" class="flex items-center gap-3">
+                <h1 class="stranger-title text-2xl sm:text-3xl text-red-600">CONFORMITY GATE</h1>
             </NuxtLink>
 
-            <nav class="hidden items-center gap-6 md:flex">
+            <nav class="hidden md:flex items-center gap-6">
                 <NuxtLink
-                    to="/modes"
-                    class="text-sm font-medium text-gray-600 transition-colors hover:text-black dark:text-gray-400 dark:hover:text-white"
+                    to="/evidence"
+                    class="relative text-gray-400 hover:text-red-600 transition-colors text-sm uppercase tracking-wider pb-1"
+                    :class="{ 'text-red-600 active-link': route.path.startsWith('/evidence') }"
                 >
-                    {{ $t("nav.modes") }}
+                    Evidence Chain
                 </NuxtLink>
                 <NuxtLink
-                    to="/rules"
-                    class="text-sm font-medium text-gray-600 transition-colors hover:text-black dark:text-gray-400 dark:hover:text-white"
+                    to="/timeline"
+                    class="relative text-gray-400 hover:text-red-600 transition-colors text-sm uppercase tracking-wider pb-1"
+                    :class="{ 'text-red-600 active-link': route.path.startsWith('/timeline') }"
                 >
-                    {{ $t("nav.rules") }}
+                    Timeline
                 </NuxtLink>
                 <NuxtLink
-                    to="/pricing"
-                    class="text-sm font-medium text-gray-600 transition-colors hover:text-black dark:text-gray-400 dark:hover:text-white"
+                    to="/chat"
+                    class="relative text-gray-400 hover:text-red-600 transition-colors text-sm uppercase tracking-wider pb-1"
+                    :class="{ 'text-red-600 active-link': route.path.startsWith('/chat') }"
                 >
-                    {{ $t("nav.pricing") }}
-                </NuxtLink>
-                <NuxtLink
-                    to="/faq"
-                    class="text-sm font-medium text-gray-600 transition-colors hover:text-black dark:text-gray-400 dark:hover:text-white"
-                >
-                    {{ $t("nav.faq") }}
+                    Chatroom
                 </NuxtLink>
             </nav>
 
-            <div class="flex items-center gap-3">
-                <ThemeSwitcher class="hidden sm:block" />
-
-                <LanguageSwitcher class="hidden sm:block" />
-
-                <NuxtLink
-                    to="/create"
-                    class="rounded-lg bg-linear-to-r from-red-500 to-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105 hover:shadow-red-500/50"
+            <!-- Mobile menu button -->
+            <button @click="toggleMobileMenu" class="md:hidden text-red-600 p-2">
+                <svg
+                    v-if="!isMobileMenuOpen"
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                 >
-                    {{ $t("nav.play") }}
-                </NuxtLink>
-
-                <button
-                    class="rounded-md p-2 text-gray-600 hover:bg-gray-50 hover:text-black dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white md:hidden"
-                    :aria-label="$t('nav.menu')"
-                    @click="toggleMobileMenu"
-                >
-                    <svg
-                        v-if="!isMobileMenuOpen"
-                        class="h-6 w-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16"
-                        />
-                    </svg>
-                    <svg
-                        v-else
-                        class="h-6 w-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
-                </button>
-            </div>
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 6h16M4 12h16M4 18h16"
+                    />
+                </svg>
+                <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                    />
+                </svg>
+            </button>
         </div>
 
-        <Transition
-            enter-active-class="transition duration-200 ease-out"
-            enter-from-class="opacity-0 scale-95"
-            enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition duration-150 ease-in"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
-        >
-            <div
-                v-if="isMobileMenuOpen"
-                class="border-t border-gray-300 bg-white dark:border-gray-900 dark:bg-black md:hidden"
-            >
-                <nav class="space-y-1 px-4 py-3">
+        <!-- Mobile menu -->
+        <Transition name="slide">
+            <div v-if="isMobileMenuOpen" class="md:hidden bg-black/95 border-t border-red-900/30">
+                <nav class="container mx-auto px-4 py-4 flex flex-col gap-4">
                     <NuxtLink
-                        to="/modes"
-                        class="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-black dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
+                        to="/evidence"
                         @click="closeMobileMenu"
+                        class="relative text-gray-400 hover:text-red-600 transition-colors text-sm uppercase tracking-wider py-2"
+                        :class="{ 'text-red-600 active-link': route.path.startsWith('/evidence') }"
                     >
-                        {{ $t("nav.modes") }}
+                        Evidence Chain
                     </NuxtLink>
                     <NuxtLink
-                        to="/rules"
-                        class="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-black dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
+                        to="/timeline"
                         @click="closeMobileMenu"
+                        class="relative text-gray-400 hover:text-red-600 transition-colors text-sm uppercase tracking-wider py-2"
+                        :class="{ 'text-red-600 active-link': route.path.startsWith('/timeline') }"
                     >
-                        {{ $t("nav.rules") }}
+                        Timeline
                     </NuxtLink>
                     <NuxtLink
-                        to="/pricing"
-                        class="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-black dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
+                        to="/chat"
                         @click="closeMobileMenu"
+                        class="relative text-gray-400 hover:text-red-600 transition-colors text-sm uppercase tracking-wider py-2"
+                        :class="{ 'text-red-600 active-link': route.path.startsWith('/chat') }"
                     >
-                        {{ $t("nav.pricing") }}
+                        Chatroom
                     </NuxtLink>
-                    <NuxtLink
-                        to="/faq"
-                        class="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-black dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
-                        @click="closeMobileMenu"
-                    >
-                        {{ $t("nav.faq") }}
-                    </NuxtLink>
-
-                    <div class="border-t border-gray-200 dark:border-gray-800 pt-2 mt-2">
-                        <div class="flex items-center justify-between px-3 py-2">
-                            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">{{
-                                $t("nav.theme")
-                            }}</span>
-                            <ThemeSwitcher />
-                        </div>
-                        <div class="px-3 py-2">
-                            <LanguageSwitcher />
-                        </div>
-                    </div>
                 </nav>
             </div>
         </Transition>
@@ -169,3 +112,45 @@ watch(
     },
 );
 </script>
+
+<style scoped>
+@font-face {
+    font-family: "Stranger Things";
+    src: url("/assets/Stranger Things Outlined.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.stranger-title {
+    font-family: "Stranger Things", cursive;
+    text-shadow:
+        0 0 10px rgba(220, 38, 38, 0.6),
+        0 0 20px rgba(220, 38, 38, 0.3);
+    letter-spacing: 0.05em;
+}
+
+.active-link::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #dc2626;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+    transition: all 0.3s ease;
+}
+
+.slide-enter-from {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.slide-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+</style>

@@ -1,0 +1,8 @@
+services:
+    nuxt:
+        build: .
+        ports:
+            - "8451:3000"
+        env_file:
+            - .env
+        restart: unless-stopped

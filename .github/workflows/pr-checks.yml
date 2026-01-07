@@ -1,0 +1,92 @@
+name: PR Checks
+
+on:
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+            - ready_for_review
+
+jobs:
+    setup:
+        if: github.event.pull_request.draft == false
+        runs-on: ubuntu-latest
+        outputs:
+            cache-key: ${{ steps.cache-key.outputs.key }}
+        steps:
+            - uses: actions/checkout@v4
+            - id: cache-key
+              run: echo "key=node_modules-${{ hashFiles('package-lock.json') }}" >> $GITHUB_OUTPUT
+            - name: Restore dependencies
+              id: cache
+              uses: actions/cache@v4
+              with:
+                  key: ${{ steps.cache-key.outputs.key }}
+                  path: node_modules/
+            - if: steps.cache.outputs.cache-hit != 'true'
+              id: setup
+              uses: ./.github/actions/setup
+            - name: Create node_modules archive
+              run: tar -czf node_modules.tar.gz node_modules
+            - name: Upload dependencies
+              uses: actions/upload-artifact@v4
+              with:
+                  name: dependencies
+                  path: node_modules.tar.gz
+                  retention-days: 1
+                  compression-level: 1
+            - name: Postinstall
+              run: npm run postinstall
+            - name: Upload .nuxt artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: nuxt
+                  path: .nuxt
+                  retention-days: 1
+                  compression-level: 1
+                  include-hidden-files: true
+
+    build:
+        needs: [setup]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/build
+              with:
+                  cache-key: ${{ needs.setup.outputs.cache-key }}
+            - name: Upload build artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: build
+                  path: .output
+                  retention-days: 1
+                  compression-level: 1
+                  include-hidden-files: true
+
+    lint:
+        needs: [setup]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/lint
+              with:
+                  cache-key: ${{ needs.setup.outputs.cache-key }}
+
+    format:
+        needs: [setup]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/format
+              with:
+                  cache-key: ${{ needs.setup.outputs.cache-key }}
+
+    types:
+        needs: [setup]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/types
+              with:
+                  cache-key: ${{ needs.setup.outputs.cache-key }}

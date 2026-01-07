@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Conformity Gate</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Courier New', monospace;
+                background: #000000;
+                color: #ffffff;
+                overflow: hidden;
+                position: relative;
+            }
+
+            /* Canvas for lightning */
+            #lightning-canvas {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+                pointer-events: none;
+            }
+
+            /* Scanlines effect */
+            .scanlines {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 0, 0, 0.15),
+                    rgba(0, 0, 0, 0.15) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+                z-index: 5;
+                pointer-events: none;
+                opacity: 0.5;
+            }
+
+            /* Vignette */
+            .vignette {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.9);
+                z-index: 4;
+                pointer-events: none;
+            }
+
+            /* Glitch overlay */
+            .glitch-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 3;
+                pointer-events: none;
+                background: linear-gradient(90deg, 
+                    transparent 0%, 
+                    rgba(255, 0, 0, 0.03) 25%, 
+                    transparent 50%, 
+                    rgba(0, 255, 0, 0.03) 75%, 
+                    transparent 100%);
+                opacity: 0;
+                animation: glitchSweep 3s infinite;
+            }
+
+            @keyframes glitchSweep {
+                0%, 90% { opacity: 0; }
+                95% { opacity: 0.5; }
+                100% { opacity: 0; }
+            }
+
+            .container {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                padding: 2rem;
+                z-index: 10;
+            }
+
+            /* Logo with chromatic aberration */
+            .logo {
+                font-size: 4rem;
+                font-weight: 900;
+                margin-bottom: 4rem;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                position: relative;
+                animation: logoFlicker 0.1s infinite alternate;
+            }
+
+            .logo-text {
+                position: relative;
+                display: inline-block;
+            }
+
+            .logo-text::before,
+            .logo-text::after {
+                content: 'CONFORMITY GATE';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            .logo-text::before {
+                color: #ff0000;
+                z-index: -1;
+                animation: glitchRed 2s infinite;
+            }
+
+            .logo-text::after {
+                color: #00ffff;
+                z-index: -2;
+                animation: glitchCyan 3s infinite;
+            }
+
+            @keyframes logoFlicker {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.95; }
+            }
+
+            @keyframes glitchRed {
+                0%, 90% { transform: translate(0); }
+                92% { transform: translate(-3px, 2px); }
+                94% { transform: translate(2px, -1px); }
+                96% { transform: translate(-2px, 3px); }
+                98%, 100% { transform: translate(0); }
+            }
+
+            @keyframes glitchCyan {
+                0%, 85% { transform: translate(0); }
+                87% { transform: translate(3px, -2px); }
+                89% { transform: translate(-2px, 1px); }
+                91% { transform: translate(2px, -3px); }
+                93%, 100% { transform: translate(0); }
+            }
+
+            /* Interdimensional gate */
+            .gate-container {
+                position: relative;
+                width: 300px;
+                height: 300px;
+                margin-bottom: 3rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .gate-core {
+                position: absolute;
+                width: 80px;
+                height: 80px;
+                background: radial-gradient(circle, 
+                    rgba(255, 0, 0, 1) 0%, 
+                    rgba(255, 0, 0, 0.6) 40%, 
+                    rgba(139, 0, 0, 0.3) 70%, 
+                    transparent 100%);
+                border-radius: 50%;
+                animation: coreBreath 2s ease-in-out infinite;
+                filter: blur(3px);
+                box-shadow: 
+                    0 0 30px rgba(255, 0, 0, 0.8),
+                    0 0 60px rgba(255, 0, 0, 0.5),
+                    0 0 90px rgba(255, 0, 0, 0.3);
+            }
+
+            @keyframes coreBreath {
+                0%, 100% { 
+                    transform: scale(1);
+                    opacity: 0.8;
+                }
+                50% { 
+                    transform: scale(1.2);
+                    opacity: 1;
+                }
+            }
+
+            .spinner {
+                position: absolute;
+                border: 3px solid transparent;
+                border-radius: 50%;
+                border-top-color: rgba(255, 50, 50, 0.8);
+                border-right-color: rgba(255, 50, 50, 0.4);
+                animation: spin 2s linear infinite;
+            }
+
+            .spinner:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                animation-duration: 1.5s;
+            }
+
+            .spinner:nth-child(3) {
+                width: 180px;
+                height: 180px;
+                animation-duration: 2.5s;
+                border-top-color: rgba(200, 0, 0, 0.6);
+                border-left-color: rgba(200, 0, 0, 0.3);
+                animation-direction: reverse;
+            }
+
+            .spinner:nth-child(4) {
+                width: 240px;
+                height: 240px;
+                animation-duration: 3.5s;
+                border-top-color: rgba(255, 100, 100, 0.5);
+                border-bottom-color: rgba(255, 100, 100, 0.2);
+            }
+
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+
+            /* Energy particles */
+            .particle-orbit {
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                animation: orbitRotate 4s linear infinite;
+            }
+
+            .particle-orbit:nth-child(6) {
+                animation-duration: 3s;
+            }
+
+            .particle-orbit:nth-child(7) {
+                animation-duration: 5s;
+                animation-direction: reverse;
+            }
+
+            @keyframes orbitRotate {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+
+            .orbit-particle {
+                position: absolute;
+                width: 6px;
+                height: 6px;
+                background: #ff3333;
+                border-radius: 50%;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                box-shadow: 0 0 10px #ff3333, 0 0 20px #ff3333;
+                animation: particleGlow 1s ease-in-out infinite;
+            }
+
+            @keyframes particleGlow {
+                0%, 100% { opacity: 0.6; }
+                50% { opacity: 1; }
+            }
+
+            /* Text with typewriter effect */
+            .text {
+                font-size: 1.2rem;
+                font-weight: 400;
+                color: #ff4444;
+                letter-spacing: 0.2em;
+                text-transform: uppercase;
+                position: relative;
+                text-shadow: 0 0 10px rgba(255, 68, 68, 0.7);
+                animation: textPulse 2s ease-in-out infinite;
+            }
+
+            @keyframes textPulse {
+                0%, 100% { 
+                    opacity: 0.7;
+                }
+                50% { 
+                    opacity: 1;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .logo {
+                    font-size: 2.5rem;
+                }
+                .gate-container {
+                    transform: scale(0.7);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="lightning-canvas"></canvas>
+        <div class="scanlines"></div>
+        <div class="vignette"></div>
+        <div class="glitch-overlay"></div>
+
+        <div class="container">
+            <div class="logo">
+                <span class="logo-text">CONFORMITY GATE</span>
+            </div>
+
+            <div class="gate-container">
+                <div class="gate-core"></div>
+                <div class="spinner"></div>
+                <div class="spinner"></div>
+                <div class="spinner"></div>
+                <div class="particle-orbit">
+                    <div class="orbit-particle"></div>
+                </div>
+                <div class="particle-orbit">
+                    <div class="orbit-particle"></div>
+                </div>
+                <div class="particle-orbit">
+                    <div class="orbit-particle"></div>
+                </div>
+            </div>
+
+            <div class="text">ACCESSING THE UPSIDE DOWN</div>
+        </div>
+
+        <script>
+            const canvas = document.getElementById('lightning-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+
+            class Lightning {
+                constructor() {
+                    this.reset();
+                }
+
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = 0;
+                    this.segments = [];
+                    this.branches = [];
+                    this.generate();
+                    this.opacity = 1;
+                    this.fadeSpeed = 0.05 + Math.random() * 0.1;
+                }
+
+                generate() {
+                    let currentX = this.x;
+                    let currentY = this.y;
+                    const segmentLength = 20 + Math.random() * 40;
+                    const segments = Math.floor(canvas.height / segmentLength);
+
+                    for (let i = 0; i < segments; i++) {
+                        const nextX = currentX + (Math.random() - 0.5) * 80;
+                        const nextY = currentY + segmentLength;
+                        
+                        this.segments.push({
+                            x1: currentX,
+                            y1: currentY,
+                            x2: nextX,
+                            y2: nextY
+                        });
+
+                        // Random branches
+                        if (Math.random() > 0.7 && i > 2) {
+                            const branchLength = 3 + Math.floor(Math.random() * 5);
+                            let branchX = currentX;
+                            let branchY = currentY;
+                            const branchSegments = [];
+
+                            for (let j = 0; j < branchLength; j++) {
+                                const bNextX = branchX + (Math.random() - 0.5) * 60;
+                                const bNextY = branchY + segmentLength * 0.7;
+                                
+                                branchSegments.push({
+                                    x1: branchX,
+                                    y1: branchY,
+                                    x2: bNextX,
+                                    y2: bNextY
+                                });
+
+                                branchX = bNextX;
+                                branchY = bNextY;
+                            }
+
+                            this.branches.push(branchSegments);
+                        }
+
+                        currentX = nextX;
+                        currentY = nextY;
+                    }
+                }
+
+                draw() {
+                    ctx.strokeStyle = `rgba(255, ${50 + Math.random() * 50}, ${50 + Math.random() * 50}, ${this.opacity})`;
+                    ctx.lineWidth = 2 + Math.random() * 2;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = '#ff0000';
+
+                    // Draw main bolt
+                    this.segments.forEach(segment => {
+                        ctx.beginPath();
+                        ctx.moveTo(segment.x1, segment.y1);
+                        ctx.lineTo(segment.x2, segment.y2);
+                        ctx.stroke();
+                    });
+
+                    // Draw branches
+                    this.branches.forEach(branch => {
+                        ctx.lineWidth = 1 + Math.random();
+                        branch.forEach(segment => {
+                            ctx.beginPath();
+                            ctx.moveTo(segment.x1, segment.y1);
+                            ctx.lineTo(segment.x2, segment.y2);
+                            ctx.stroke();
+                        });
+                    });
+
+                    this.opacity -= this.fadeSpeed;
+                }
+
+                isDead() {
+                    return this.opacity <= 0;
+                }
+            }
+
+            const lightnings = [];
+            let lastLightning = 0;
+
+            function animate(timestamp) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Spawn new lightning
+                if (timestamp - lastLightning > 1000 + Math.random() * 3000) {
+                    lightnings.push(new Lightning());
+                    lastLightning = timestamp;
+                    
+                    // Occasional double strike
+                    if (Math.random() > 0.7) {
+                        setTimeout(() => {
+                            lightnings.push(new Lightning());
+                        }, 50 + Math.random() * 100);
+                    }
+                }
+
+                // Draw and update all lightnings
+                for (let i = lightnings.length - 1; i >= 0; i--) {
+                    lightnings[i].draw();
+                    if (lightnings[i].isDead()) {
+                        lightnings.splice(i, 1);
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            animate(0);
+        </script>
+    </body>
+</html>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+                    sans-serif;
+                background: #0a0a0a;
+                color: #ffffff;
+                overflow: hidden;
+                position: relative;
+            }
+
+            /* Animated background */
+            .bg-gradient {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: radial-gradient(ellipse at center, #1a0a0f 0%, #0a0a0a 100%);
+                z-index: 0;
+            }
+
+            /* Lightning effects */
+            .lightning {
+                position: fixed;
+                width: 2px;
+                height: 100vh;
+                background: linear-gradient(to bottom, transparent, #ff3333, transparent);
+                opacity: 0;
+                z-index: 1;
+                filter: blur(1px);
+                box-shadow: 0 0 20px #ff3333, 0 0 40px #ff3333;
+            }
+
+            .lightning:nth-child(1) {
+                left: 20%;
+                animation: strike 5s infinite;
+                animation-delay: 1s;
+            }
+
+            .lightning:nth-child(2) {
+                left: 50%;
+                animation: strike 7s infinite;
+                animation-delay: 3s;
+            }
+
+            .lightning:nth-child(3) {
+                left: 80%;
+                animation: strike 6s infinite;
+                animation-delay: 5s;
+            }
+
+            @keyframes strike {
+                0%, 90%, 100% {
+                    opacity: 0;
+                }
+                91%, 92% {
+                    opacity: 0.9;
+                }
+                93% {
+                    opacity: 0;
+                }
+                94%, 95% {
+                    opacity: 1;
+                }
+                96%, 100% {
+                    opacity: 0;
+                }
+            }
+
+            /* Particle effects */
+            .particles {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 2;
+                pointer-events: none;
+            }
+
+            .particle {
+                position: absolute;
+                width: 2px;
+                height: 2px;
+                background: #ff3333;
+                border-radius: 50%;
+                opacity: 0;
+                animation: float 10s infinite;
+            }
+
+            @keyframes float {
+                0% {
+                    transform: translateY(100vh) translateX(0);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 0.5;
+                }
+                90% {
+                    opacity: 0.5;
+                }
+                100% {
+                    transform: translateY(-100px) translateX(100px);
+                    opacity: 0;
+                }
+            }
+
+            .container {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                padding: 2rem;
+                z-index: 10;
+            }
+
+            .logo {
+                font-size: 3.5rem;
+                font-weight: 900;
+                margin-bottom: 2.5rem;
+                letter-spacing: 0.05em;
+                opacity: 0;
+                animation: fadeInGlow 1s ease-out forwards;
+                text-shadow: 
+                    0 0 10px rgba(255, 51, 51, 0.5),
+                    0 0 20px rgba(255, 51, 51, 0.3),
+                    0 0 30px rgba(255, 51, 51, 0.2);
+                color: #ffffff;
+            }
+
+            /* Portal/Gate effect */
+            .gate {
+                position: relative;
+                width: 200px;
+                height: 200px;
+                margin-bottom: 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .gate-ring {
+                position: absolute;
+                border: 3px solid #ff3333;
+                border-radius: 50%;
+                opacity: 0;
+                animation: pulse 2s ease-out infinite;
+            }
+
+            .gate-ring:nth-child(1) {
+                width: 60px;
+                height: 60px;
+                animation-delay: 0s;
+            }
+
+            .gate-ring:nth-child(2) {
+                width: 100px;
+                height: 100px;
+                animation-delay: 0.3s;
+            }
+
+            .gate-ring:nth-child(3) {
+                width: 140px;
+                height: 140px;
+                animation-delay: 0.6s;
+            }
+
+            .gate-ring:nth-child(4) {
+                width: 180px;
+                height: 180px;
+                animation-delay: 0.9s;
+            }
+
+            @keyframes pulse {
+                0% {
+                    opacity: 0;
+                    transform: scale(0.5);
+                }
+                50% {
+                    opacity: 0.8;
+                }
+                100% {
+                    opacity: 0;
+                    transform: scale(1.2);
+                }
+            }
+
+            .gate-center {
+                width: 40px;
+                height: 40px;
+                background: radial-gradient(circle, #ff3333 0%, transparent 70%);
+                border-radius: 50%;
+                animation: glow 2s ease-in-out infinite;
+                box-shadow: 
+                    0 0 20px #ff3333,
+                    0 0 40px #ff3333,
+                    0 0 60px rgba(255, 51, 51, 0.5);
+            }
+
+            @keyframes glow {
+                0%, 100% {
+                    opacity: 0.6;
+                    transform: scale(1);
+                }
+                50% {
+                    opacity: 1;
+                    transform: scale(1.2);
+                }
+            }
+
+            .text {
+                font-size: 1.1rem;
+                font-weight: 500;
+                color: #ff6666;
+                margin-top: 2.5rem;
+                opacity: 0;
+                animation: fadeInGlow 0.8s ease-out 1s forwards;
+                text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+                letter-spacing: 0.1em;
+            }
+
+            @keyframes fadeInGlow {
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .logo {
+                    font-size: 2rem;
+                }
+                .gate {
+                    transform: scale(0.8);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="bg-gradient"></div>
+        
+        <!-- Lightning bolts -->
+        <div class="lightning"></div>
+        <div class="lightning"></div>
+        <div class="lightning"></div>
+        
+        <!-- Floating particles -->
+        <div class="particles" id="particles"></div>
+
+        <div class="container">
+            <div class="logo">CONFORMITY GATE</div>
+
+            <div class="gate">
+                <div class="gate-ring"></div>
+                <div class="gate-ring"></div>
+                <div class="gate-ring"></div>
+                <div class="gate-ring"></div>
+                <div class="gate-center"></div>
+            </div>
+
+            <div class="text">Opening the gate...</div>
+        </div>
+
+        <script>
+            // Create floating particles
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (5 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        </script>
+    </body>
+</html>

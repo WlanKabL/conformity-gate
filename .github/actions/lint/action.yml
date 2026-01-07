@@ -1,0 +1,36 @@
+name: Run Lint
+
+inputs:
+    cache-key:
+        required: true
+        description: "Dependencies cache key"
+
+runs:
+    using: "composite"
+    steps:
+        - name: Setup Node.js
+          uses: actions/setup-node@v4
+          with:
+              node-version-file: ".nvmrc"
+
+        - uses: actions/cache/restore@v4
+          with:
+              key: ${{ inputs.cache-key }}
+              fail-on-cache-miss: true
+              path: node_modules/
+
+        - name: Download nuxt
+          uses: actions/download-artifact@v4
+          with:
+              name: nuxt
+              path: .nuxt
+
+        - name: Restore ESLint cache
+          uses: actions/cache@v4
+          with:
+              key: eslint
+              path: .eslintcache
+
+        - name: Run linting
+          run: npm run lint
+          shell: bash

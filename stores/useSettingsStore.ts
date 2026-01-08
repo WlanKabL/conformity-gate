@@ -14,7 +14,7 @@ export const useSettingsStore = defineStore("settings", () => {
     }
 
     // Single source of truth - localStorage with validation
-    const currentLocale = useLocalStorage<string>("universal_jenga_locale", "en", {
+    const currentLocale = useLocalStorage<string>("conformity_gate_locale", "en", {
         writeDefaults: false,
         serializer: {
             read: (value: string | null) => {
@@ -29,7 +29,7 @@ export const useSettingsStore = defineStore("settings", () => {
         },
     });
 
-    const currentTheme = useLocalStorage<Theme>("universal_jenga_theme", "dark", {
+    const currentTheme = useLocalStorage<Theme>("conformity_gate_theme", "dark", {
         writeDefaults: false,
         serializer: {
             read: (value: string | null) => {

@@ -31,7 +31,7 @@
         >
             <div class="max-w-6xl w-full text-center space-y-20">
                 <!-- Logo/Title -->
-                <div>
+                <header>
                     <h1
                         ref="titleElement"
                         class="text-red-600 stranger-title text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl mb-6 transition-transform duration-[5000ms]"
@@ -43,16 +43,17 @@
                     >
                         The Upside Down Awaits
                     </p>
-                </div>
+                    <p class="text-gray-400 text-xs sm:text-sm mt-4 max-w-2xl mx-auto">
+                        Investigating the hidden Stranger Things Episode 9. Evidence. Timeline.
+                        Community. The truth Netflix doesn't want you to see.
+                    </p>
+                </header>
 
                 <!-- Countdown or Result -->
-                <div>
-                    <CountdownDisplay
-                        v-if="!countdownEnded"
-                        :targetDate="targetDate"
-                    />
+                <section aria-label="Episode 9 Countdown">
+                    <CountdownDisplay v-if="!countdownEnded" :targetDate="targetDate" />
                     <ResultDisplay v-else :status="episodeStatus" />
-                </div>
+                </section>
             </div>
         </div>
     </div>
@@ -67,7 +68,7 @@ const episodeStatus = ref<string | false | null>(false);
 const targetDate = new Date("2025-01-08T02:00:00").getTime();
 
 // Computed: Check if countdown has ended
-const countdownEnded = true
+const countdownEnded = true;
 
 onMounted(() => {
     // Konami Code Easter Egg
@@ -195,17 +196,29 @@ onMounted(() => {
 });
 
 useHead({
-    title: "Conformity Gate - Stranger Things Episode 9 Evidence",
+    title: "Conformity Gate - Stranger Things Episode 9 Evidence | The Truth Is Out There",
     meta: [
         {
             name: "description",
             content:
-                "Support group for Conformity Gate believers. Evidence chain, chatroom, timeline, and Netflix status check for the hidden Stranger Things Episode 9.",
+                "Discover the hidden Stranger Things Episode 9 evidence. Join the Conformity Gate community investigating Netflix's biggest conspiracy. Live countdown, chat, and documented proof.",
         },
         {
             name: "keywords",
             content:
-                "Stranger Things, Conformity Gate, Episode 9, Hawkins, Upside Down, Netflix, Support Group, Evidence",
+                "Stranger Things Episode 9, Conformity Gate, hidden episode, Netflix conspiracy, Hawkins, Upside Down, Vecna, Episode 9 evidence, fan theory, Stranger Things Season 5, WSQK, Number 7, Fourth Wall Break",
+        },
+        {
+            name: "author",
+            content: "Conformity Gate Community",
+        },
+        {
+            name: "robots",
+            content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+        },
+        {
+            name: "googlebot",
+            content: "index, follow",
         },
         // Open Graph / Facebook
         {
@@ -213,17 +226,41 @@ useHead({
             content: "website",
         },
         {
+            property: "og:url",
+            content: "https://conformity-gate.com",
+        },
+        {
             property: "og:title",
-            content: "Conformity Gate - The Hidden Episode 9",
+            content: "Conformity Gate - The Hidden Episode 9 Evidence",
         },
         {
             property: "og:description",
             content:
-                "Support group for Conformity Gate believers. We know Episode 9 exists. Join us.",
+                "We have proof. Episode 9 exists. Join believers investigating the biggest Netflix cover-up. Live countdown to the truth.",
         },
         {
             property: "og:site_name",
             content: "Conformity Gate",
+        },
+        {
+            property: "og:locale",
+            content: "en_US",
+        },
+        {
+            property: "og:image",
+            content: "https://conformity-gate.com/og-image.jpg",
+        },
+        {
+            property: "og:image:width",
+            content: "1200",
+        },
+        {
+            property: "og:image:height",
+            content: "630",
+        },
+        {
+            property: "og:image:alt",
+            content: "Conformity Gate - Stranger Things Episode 9 Investigation",
         },
         // Twitter
         {
@@ -231,13 +268,29 @@ useHead({
             content: "summary_large_image",
         },
         {
+            name: "twitter:site",
+            content: "@ConformityGate",
+        },
+        {
+            name: "twitter:creator",
+            content: "@ConformityGate",
+        },
+        {
             name: "twitter:title",
-            content: "Conformity Gate - The Hidden Episode 9",
+            content: "Conformity Gate - The Hidden Episode 9 Evidence",
         },
         {
             name: "twitter:description",
             content:
-                "Support group for Conformity Gate believers. Evidence chain, timeline, and more.",
+                "We have proof. Episode 9 exists. Join believers investigating the biggest Netflix cover-up. Live countdown to the truth.",
+        },
+        {
+            name: "twitter:image",
+            content: "https://conformity-gate.com/og-image.jpg",
+        },
+        {
+            name: "twitter:image:alt",
+            content: "Conformity Gate - Stranger Things Episode 9 Investigation",
         },
         // Theme
         {
@@ -247,6 +300,63 @@ useHead({
         {
             name: "msapplication-TileColor",
             content: "#dc2626",
+        },
+    ],
+    link: [
+        {
+            rel: "canonical",
+            href: "https://conformity-gate.com",
+        },
+        {
+            rel: "alternate",
+            hreflang: "en",
+            href: "https://conformity-gate.com",
+        },
+        {
+            rel: "alternate",
+            hreflang: "de",
+            href: "https://conformity-gate.com",
+        },
+    ],
+    script: [
+        {
+            type: "application/ld+json",
+            children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                name: "Conformity Gate",
+                alternateName: "Stranger Things Episode 9 Evidence Hub",
+                url: "https://conformity-gate.com",
+                description:
+                    "Community investigating evidence for the hidden Stranger Things Episode 9 - Conformity Gate conspiracy theory and documented proof",
+                inLanguage: ["en-US", "de-DE"],
+                keywords:
+                    "Stranger Things, Episode 9, Conformity Gate, Netflix, conspiracy, hidden episode, Vecna, Upside Down",
+                about: {
+                    "@type": "Thing",
+                    name: "Stranger Things Episode 9",
+                    description:
+                        "Investigation into the alleged hidden ninth episode of Stranger Things Season 4",
+                },
+                potentialAction: {
+                    "@type": "SearchAction",
+                    target: "https://conformity-gate.com/?q={search_term_string}",
+                    "query-input": "required name=search_term_string",
+                },
+            }),
+        },
+        {
+            type: "application/ld+json",
+            children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                name: "Conformity Gate",
+                url: "https://conformity-gate.com",
+                logo: "https://conformity-gate.com/logo.png",
+                description:
+                    "Support group and investigation hub for Conformity Gate believers - documenting evidence for Stranger Things hidden Episode 9",
+                sameAs: ["https://twitter.com/ConformityGate"],
+            }),
         },
     ],
 });

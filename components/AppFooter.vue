@@ -10,7 +10,7 @@
                             <span class="text-2xl font-bold text-white">🎲</span>
                         </div>
                         <span class="text-lg font-bold text-gray-900 dark:text-white"
-                            >Universal Jenga</span
+                            >conformity-gate.com</span
                         >
                     </div>
                     <p class="text-sm text-gray-600 dark:text-gray-500">
@@ -18,7 +18,7 @@
                     </p>
                     <div class="flex gap-3">
                         <a
-                            href="https://github.com/WlanKabL/Jenga"
+                            href="https://github.com/WlanKabL/conformity-gate"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="rounded-md p-2 text-gray-600 transition-colors hover:bg-gray-50 hover:text-black dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-white"
@@ -68,34 +68,26 @@
                     <ul class="space-y-3">
                         <li>
                             <NuxtLink
-                                to="/modes"
+                                to="/evidence"
                                 class="text-sm text-gray-600 transition-colors hover:text-black dark:text-gray-500 dark:hover:text-white"
                             >
-                                {{ $t("footer.gameModes") }}
+                                {{ $t("footer.evidence") }}
                             </NuxtLink>
                         </li>
                         <li>
                             <NuxtLink
-                                to="/pricing"
+                                to="/timeline"
                                 class="text-sm text-gray-600 transition-colors hover:text-black dark:text-gray-500 dark:hover:text-white"
                             >
-                                {{ $t("footer.pricing") }}
+                                {{ $t("footer.timeline") }}
                             </NuxtLink>
                         </li>
                         <li>
                             <NuxtLink
-                                to="/diy"
+                                to="/chat"
                                 class="text-sm text-gray-600 transition-colors hover:text-black dark:text-gray-500 dark:hover:text-white"
                             >
-                                {{ $t("footer.diyGuide") }}
-                            </NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink
-                                to="/shop"
-                                class="text-sm text-gray-600 transition-colors hover:text-black dark:text-gray-500 dark:hover:text-white"
-                            >
-                                {{ $t("footer.shop") }}
+                                {{ $t("footer.chat") }}
                             </NuxtLink>
                         </li>
                     </ul>
@@ -110,14 +102,6 @@
                     <ul class="space-y-3">
                         <li>
                             <NuxtLink
-                                to="/rules"
-                                class="text-sm text-gray-600 transition-colors hover:text-black dark:text-gray-500 dark:hover:text-white"
-                            >
-                                {{ $t("footer.howToPlay") }}
-                            </NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink
                                 to="/faq"
                                 class="text-sm text-gray-600 transition-colors hover:text-black dark:text-gray-500 dark:hover:text-white"
                             >
@@ -126,19 +110,11 @@
                         </li>
                         <li>
                             <a
-                                href="mailto:support@universaljenga.com"
+                                href="mailto:support@conformity-gate.com"
                                 class="text-sm text-gray-600 transition-colors hover:text-black dark:text-gray-500 dark:hover:text-white"
                             >
                                 {{ $t("footer.contact") }}
                             </a>
-                        </li>
-                        <li>
-                            <NuxtLink
-                                to="/b2b"
-                                class="text-sm text-gray-600 transition-colors hover:text-black dark:text-gray-500 dark:hover:text-white"
-                            >
-                                {{ $t("footer.business") }}
-                            </NuxtLink>
                         </li>
                     </ul>
                 </div>

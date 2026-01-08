@@ -1,5 +1,5 @@
 {
-    "name": "jenga",
+    "name": "conformity-gate",
     "type": "module",
     "private": true,
     "scripts": {

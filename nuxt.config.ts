@@ -19,7 +19,7 @@ export default defineNuxtConfig({
         head: {
             script: [
                 {
-                    innerHTML: `(function(){try{const t=localStorage.getItem('universal_jenga_theme');if(t&&JSON.parse(t)==='dark'){document.documentElement.classList.add('dark');}}else{document.documentElement.classList.add('dark');}}catch(e){}})();`,
+                    innerHTML: `(function(){try{const t=localStorage.getItem('conformity_gate_theme');if(t&&JSON.parse(t)==='dark'){document.documentElement.classList.add('dark');}}else{document.documentElement.classList.add('dark');}}catch(e){}})();`,
                     type: "text/javascript",
                 },
             ],
@@ -66,7 +66,16 @@ export default defineNuxtConfig({
         },
     },
     site: {
-        url: "https://universaljenga.crowd-nation.com",
+        url: "https://conformity-gate.com",
+        name: "Conformity Gate",
+        description:
+            "Investigating the hidden Stranger Things Episode 9 - Evidence, community, and the truth Netflix doesn't want you to see",
+        defaultLocale: "en",
+    },
+    sitemap: {
+        strictNuxtContentPaths: true,
+        autoLastmod: true,
+        sources: ["/api/__sitemap__/urls"],
     },
     alias: {
         "@": resolve(__dirname, "."),

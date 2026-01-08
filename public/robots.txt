@@ -1,2 +1,15 @@
 User-Agent: *
+Allow: /
+Disallow: /admin-login
+
+Sitemap: https://conformity-gate.com/sitemap.xml
+
+# Crawl-delay for polite crawlers
+Crawl-delay: 1
+
+# Block specific bots if needed (currently allowing all)
+User-agent: GPTBot
+Disallow:
+
+User-agent: ChatGPT-User
 Disallow:

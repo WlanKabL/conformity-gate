@@ -67,7 +67,7 @@ const episodeStatus = ref<string | false | null>(false);
 const targetDate = new Date("2026-01-08T02:00:00").getTime();
 
 // Computed: Check if countdown has ended
-const countdownEnded = computed(() => new Date().getTime() >= targetDate);
+const countdownEnded = true
 
 onMounted(() => {
     // Konami Code Easter Egg

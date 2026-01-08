@@ -18,6 +18,14 @@ logs
 .fleet
 .idea
 
+# Local env files
+.env
+.env.*
+!.env.example
+
+# Chat data
+data/messages.json
+
 # ESLint
 .eslintcache
 

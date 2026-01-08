@@ -41,8 +41,8 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        // Get last N messages (newest first, then reverse for chronological order)
-        const result = filteredMessages.slice(-limit).reverse();
+        // Get last N messages in chronological order (oldest -> newest)
+        const result = filteredMessages.slice(-limit);
 
         return {
             messages: result,

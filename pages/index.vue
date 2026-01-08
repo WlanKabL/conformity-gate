@@ -64,7 +64,7 @@ const titleElement = ref<HTMLElement | null>(null);
 const episodeStatus = ref<string | false | null>(false);
 
 // 8. Januar 2026, 02:00 Uhr (Deine Zeitzone - CET/CEST)
-const targetDate = new Date("2026-01-08T02:00:00").getTime();
+const targetDate = new Date("2025-01-08T02:00:00").getTime();
 
 // Computed: Check if countdown has ended
 const countdownEnded = true

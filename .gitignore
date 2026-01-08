@@ -25,6 +25,9 @@ logs
 
 # Chat data
 data/messages.json
+data/banned-users.json
+data/banned-ips.json
+data/rate-limits.json
 public/episode-status.json
 
 # ESLint

@@ -19,13 +19,16 @@
         <AppHeader />
 
         <!-- Username Modal -->
-        <div v-if="!username" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
+        <div
+            v-if="!username"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+        >
             <div class="max-w-md w-full mx-4 p-8 bg-black border-2 border-red-600 rounded-lg">
-                <h2 class="text-red-600 stranger-title text-3xl mb-4 text-center">
-                    ENTER CHAT
-                </h2>
-                <p class="text-gray-400 mb-6 text-center">Choose your username (cannot be changed later)</p>
-                
+                <h2 class="text-red-600 stranger-title text-3xl mb-4 text-center">ENTER CHAT</h2>
+                <p class="text-gray-400 mb-6 text-center">
+                    Choose your username (cannot be changed later)
+                </p>
+
                 <form @submit.prevent="setUsername" class="space-y-4">
                     <input
                         v-model="usernameInput"
@@ -34,7 +37,7 @@
                         maxlength="20"
                         required
                         class="w-full px-4 py-3 bg-black/60 border-2 border-red-900/30 focus:border-red-600 rounded-lg text-gray-300 placeholder-gray-600 outline-none transition-colors"
-                    >
+                    />
                     <button
                         type="submit"
                         class="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all uppercase text-sm tracking-wider"
@@ -46,10 +49,17 @@
         </div>
 
         <!-- Ban Notice -->
-        <div v-if="banStatus.bannedUntil && banStatus.bannedUntil > Date.now()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
-            <div class="max-w-md w-full mx-4 p-8 bg-black border-2 border-red-600 rounded-lg text-center">
+        <div
+            v-if="banStatus.bannedUntil && banStatus.bannedUntil > Date.now()"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+        >
+            <div
+                class="max-w-md w-full mx-4 p-8 bg-black border-2 border-red-600 rounded-lg text-center"
+            >
                 <h2 class="text-red-600 stranger-title text-3xl mb-4">BANNED</h2>
-                <p class="text-gray-400 mb-4">You have been temporarily banned for using inappropriate language.</p>
+                <p class="text-gray-400 mb-4">
+                    You have been temporarily banned for using inappropriate language.
+                </p>
                 <p class="text-red-600 text-xl font-bold">
                     {{ formatBanTime(banStatus.bannedUntil - Date.now()) }}
                 </p>
@@ -58,25 +68,43 @@
         </div>
 
         <!-- Permanent Ban -->
-        <div v-if="banStatus.permanentBan" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
-            <div class="max-w-md w-full mx-4 p-8 bg-black border-2 border-red-600 rounded-lg text-center">
+        <div
+            v-if="banStatus.permanentBan"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+        >
+            <div
+                class="max-w-md w-full mx-4 p-8 bg-black border-2 border-red-600 rounded-lg text-center"
+            >
                 <h2 class="text-red-600 stranger-title text-3xl mb-4">PERMANENTLY BANNED</h2>
-                <p class="text-gray-400">You have been permanently banned from the chat for repeated violations.</p>
+                <p class="text-gray-400">
+                    You have been permanently banned from the chat for repeated violations.
+                </p>
             </div>
         </div>
 
         <!-- Main Chat -->
         <div v-if="username && !isBanned" class="relative z-10 px-4 py-20 pt-32">
             <div class="max-w-4xl mx-auto">
-                <h1 class="text-red-600 stranger-title text-4xl sm:text-5xl md:text-6xl mb-8 text-center">
+                <h1
+                    class="text-red-600 stranger-title text-4xl sm:text-5xl md:text-6xl mb-8 text-center"
+                >
                     CHATROOM
                 </h1>
 
                 <!-- Warning Notice -->
-                <div v-if="banStatus.warnings > 0" class="mb-4 p-4 bg-red-900/20 border-2 border-red-600 rounded-lg">
+                <div
+                    v-if="banStatus.warnings > 0"
+                    class="mb-4 p-4 bg-red-900/20 border-2 border-red-600 rounded-lg"
+                >
                     <p class="text-red-600 font-bold">
-                        ⚠️ Warning {{ banStatus.warnings }}/3 - Inappropriate language detected. 
-                        {{ banStatus.warnings === 1 ? 'Next: 1h ban' : banStatus.warnings === 2 ? 'Next: 24h ban' : 'Next: Permanent ban' }}
+                        ⚠️ Warning {{ banStatus.warnings }}/3 - Inappropriate language detected.
+                        {{
+                            banStatus.warnings === 1
+                                ? "Next: 1h ban"
+                                : banStatus.warnings === 2
+                                  ? "Next: 24h ban"
+                                  : "Next: Permanent ban"
+                        }}
                     </p>
                 </div>
 
@@ -98,14 +126,73 @@
                             v-for="message in messages"
                             :key="message.id"
                             class="flex gap-3 p-3 rounded-lg transition-colors"
-                            :class="message.username === username ? 'bg-red-900/10' : 'hover:bg-red-900/5'"
+                            :class="[
+                                message.username === username
+                                    ? 'bg-red-900/10'
+                                    : 'hover:bg-red-900/5',
+                                message.deleted ? 'opacity-50' : '',
+                            ]"
                         >
                             <div class="flex-1">
-                                <div class="flex items-baseline gap-2 mb-1">
-                                    <span class="font-bold text-red-600">{{ message.username }}</span>
-                                    <span class="text-xs text-gray-600">{{ formatTime(message.timestamp) }}</span>
+                                <div class="flex items-center justify-between gap-2 mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            class="font-bold text-red-600"
+                                            :class="
+                                                message.deleted ? 'line-through text-gray-600' : ''
+                                            "
+                                            >{{ message.username }}</span
+                                        >
+                                        <span
+                                            v-if="
+                                                message.username &&
+                                                message.username
+                                                    .toLowerCase()
+                                                    .includes('wlankabl') &&
+                                                !message.deleted
+                                            "
+                                            class="inline-block px-2 py-0.5 text-[10px] font-bold text-yellow-400 bg-yellow-900/30 border border-yellow-500 rounded uppercase"
+                                        >
+                                            DEVELOPER
+                                        </span>
+                                        <span class="text-xs text-gray-600">{{
+                                            formatTime(message.timestamp)
+                                        }}</span>
+                                    </div>
+                                    <div
+                                        v-if="
+                                            isAdmin &&
+                                            message.username !== username &&
+                                            !message.deleted
+                                        "
+                                        class="flex gap-1"
+                                    >
+                                        <button
+                                            @click="deleteMessage(message.id)"
+                                            class="w-6 h-6 flex items-center justify-center bg-orange-900/20 hover:bg-orange-600 border border-orange-600/50 hover:border-orange-600 text-orange-500 hover:text-white rounded text-xs transition-all"
+                                            title="Delete message"
+                                        >
+                                            ✕
+                                        </button>
+                                        <button
+                                            @click="banUser(message.username, message.ip)"
+                                            class="w-6 h-6 flex items-center justify-center bg-red-900/20 hover:bg-red-600 border border-red-600/50 hover:border-red-600 text-red-500 hover:text-white rounded text-xs transition-all"
+                                            title="Ban user"
+                                        >
+                                            ⊘
+                                        </button>
+                                    </div>
                                 </div>
-                                <p class="text-gray-300">{{ message.content }}</p>
+                                <p
+                                    class="text-gray-300"
+                                    :class="message.deleted ? 'italic text-gray-600' : ''"
+                                >
+                                    {{
+                                        message.deleted && !isAdmin
+                                            ? "Message deleted"
+                                            : message.content
+                                    }}
+                                </p>
                             </div>
                         </div>
 
@@ -125,7 +212,7 @@
                                 maxlength="500"
                                 required
                                 class="flex-1 px-4 py-3 bg-black/60 border-2 border-red-900/30 focus:border-red-600 rounded-lg text-gray-300 placeholder-gray-600 outline-none transition-colors"
-                            >
+                            />
                             <button
                                 type="submit"
                                 :disabled="sending"
@@ -134,7 +221,9 @@
                                 Send
                             </button>
                         </form>
-                        <p class="text-xs text-gray-600 mt-2">{{ messageInput.length }}/500 characters</p>
+                        <p class="text-xs text-gray-600 mt-2">
+                            {{ messageInput.length }}/500 characters
+                        </p>
                     </div>
                 </div>
             </div>
@@ -143,11 +232,14 @@
 </template>
 
 <script setup lang="ts">
-import type { ChatMessage, UserBanStatus } from '~/types/chat';
+import type { ChatMessage, UserBanStatus } from "~/types/chat";
+import { useAdminStore } from "~/stores/useAdminStore";
 
-const username = ref('');
-const usernameInput = ref('');
-const messageInput = ref('');
+const adminStore = useAdminStore();
+
+const username = ref("");
+const usernameInput = ref("");
+const messageInput = ref("");
 const messages = ref<ChatMessage[]>([]);
 const messagesContainer = ref<HTMLElement | null>(null);
 const sending = ref(false);
@@ -158,23 +250,36 @@ const pollingInterval = ref<NodeJS.Timeout | null>(null);
 const banStatus = ref<UserBanStatus>({
     warnings: 0,
     bannedUntil: null,
-    permanentBan: false
+    permanentBan: false,
 });
 
 const isBanned = computed(() => {
-    return banStatus.value.permanentBan || 
-           (banStatus.value.bannedUntil && banStatus.value.bannedUntil > Date.now());
+    return (
+        banStatus.value.permanentBan ||
+        (banStatus.value.bannedUntil && banStatus.value.bannedUntil > Date.now())
+    );
+});
+
+const isAdmin = computed(() => {
+    return adminStore.isAdmin; // Only JWT-verified admins can see admin controls
+});
+
+const isDeveloper = computed(() => {
+    return username.value.toLowerCase().includes("wlankabl");
 });
 
 // Load username from localStorage
-onMounted(() => {
-    const stored = localStorage.getItem('conformity-username');
+onMounted(async () => {
+    // Verify admin token
+    await adminStore.verifyToken();
+
+    const stored = localStorage.getItem("conformity-username");
     if (stored) {
         username.value = stored;
     }
 
     // Load ban status
-    const storedBan = localStorage.getItem('conformity-ban');
+    const storedBan = localStorage.getItem("conformity-ban");
     if (storedBan) {
         banStatus.value = JSON.parse(storedBan);
     }
@@ -194,8 +299,15 @@ onBeforeUnmount(() => {
 
 const setUsername = () => {
     if (usernameInput.value.trim().length < 2) return;
+
+    // Block wlankabl username unless admin
+    if (usernameInput.value.toLowerCase().includes("wlankabl") && !adminStore.isAdmin) {
+        alert("This username is reserved for the developer. Please choose another name.");
+        return;
+    }
+
     username.value = usernameInput.value.trim();
-    localStorage.setItem('conformity-username', username.value);
+    localStorage.setItem("conformity-username", username.value);
     loadMessages();
     startPolling();
 };
@@ -203,13 +315,13 @@ const setUsername = () => {
 const loadMessages = async (loadOlder = false) => {
     try {
         const params: any = { limit: 100 };
-        
+
         if (loadOlder && messages.value.length > 0) {
             params.before = messages.value[0].id;
         }
 
-        const response = await $fetch('/api/messages', { params });
-        
+        const response = await $fetch("/api/messages", { params });
+
         if (loadOlder) {
             messages.value = [...response.messages, ...messages.value];
         } else {
@@ -219,10 +331,10 @@ const loadMessages = async (loadOlder = false) => {
             }
             scrollToBottom();
         }
-        
+
         hasMore.value = response.hasMore;
     } catch (error) {
-        console.error('Failed to load messages:', error);
+        console.error("Failed to load messages:", error);
     }
 };
 
@@ -234,8 +346,8 @@ const pollMessages = async () => {
     if (!lastMessageId.value) return;
 
     try {
-        const response = await $fetch('/api/messages', {
-            params: { since: lastMessageId.value }
+        const response = await $fetch("/api/messages", {
+            params: { since: lastMessageId.value },
         });
 
         if (response.messages.length > 0) {
@@ -244,7 +356,7 @@ const pollMessages = async () => {
             scrollToBottom();
         }
     } catch (error) {
-        console.error('Failed to poll messages:', error);
+        console.error("Failed to poll messages:", error);
     }
 };
 
@@ -258,32 +370,82 @@ const sendMessage = async () => {
     sending.value = true;
 
     try {
-        const newMessage = await $fetch('/api/messages', {
-            method: 'POST',
+        const newMessage = await $fetch("/api/messages", {
+            method: "POST",
             body: {
                 username: username.value,
-                content: messageInput.value
-            }
+                content: messageInput.value,
+                adminToken: adminStore.token,
+            },
         });
 
         messages.value.push(newMessage as ChatMessage);
         lastMessageId.value = (newMessage as ChatMessage).id;
-        messageInput.value = '';
+        messageInput.value = "";
         scrollToBottom();
     } catch (error: any) {
-        if (error.statusMessage === 'BAD_WORD_DETECTED') {
+        if (error.statusMessage === "BAD_WORD_DETECTED") {
             handleBadWord();
+        } else if (error.statusMessage === "USER_BANNED" || error.statusMessage === "IP_BANNED") {
+            banStatus.value.permanentBan = true;
+            localStorage.setItem("conformity-ban", JSON.stringify(banStatus.value));
+            alert("You have been permanently banned by an administrator.");
         } else {
-            console.error('Failed to send message:', error);
+            console.error("Failed to send message:", error);
         }
     } finally {
         sending.value = false;
     }
 };
 
+const banUser = async (targetUsername: string, targetIp?: string) => {
+    if (!confirm(`Ban user "${targetUsername}"? This is permanent.`)) return;
+
+    try {
+        await $fetch("/api/ban-user", {
+            method: "POST",
+            body: {
+                username: targetUsername,
+                ip: targetIp,
+                adminToken: adminStore.token,
+            },
+        });
+
+        alert(
+            `User "${targetUsername}" has been permanently banned. Their messages remain visible - delete them individually if needed.`,
+        );
+    } catch (error) {
+        console.error("Failed to ban user:", error);
+        alert("Failed to ban user. Make sure you are logged in as admin.");
+    }
+};
+
+const deleteMessage = async (messageId: string) => {
+    if (!confirm("Delete this message? This cannot be undone.")) return;
+
+    try {
+        await $fetch("/api/delete-message", {
+            method: "POST",
+            body: {
+                messageId,
+                adminToken: adminStore.token,
+            },
+        });
+
+        // Update local message to deleted state (keep original content for admin)
+        const message = messages.value.find((m) => m.id === messageId);
+        if (message) {
+            message.deleted = true;
+        }
+    } catch (error) {
+        console.error("Failed to delete message:", error);
+        alert("Failed to delete message. Make sure you are logged in as admin.");
+    }
+};
+
 const handleBadWord = () => {
     banStatus.value.warnings++;
-    
+
     if (banStatus.value.warnings === 1) {
         // First warning: 1 hour ban
         banStatus.value.bannedUntil = Date.now() + 60 * 60 * 1000;
@@ -294,9 +456,9 @@ const handleBadWord = () => {
         // Third warning: permanent ban
         banStatus.value.permanentBan = true;
     }
-    
-    localStorage.setItem('conformity-ban', JSON.stringify(banStatus.value));
-    messageInput.value = '';
+
+    localStorage.setItem("conformity-ban", JSON.stringify(banStatus.value));
+    messageInput.value = "";
 };
 
 const scrollToBottom = () => {
@@ -311,18 +473,23 @@ const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
-    
-    if (diff < 60000) return 'just now';
+
+    if (diff < 60000) return "just now";
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-    
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
 };
 
 const formatBanTime = (ms: number) => {
     const hours = Math.floor(ms / (60 * 60 * 1000));
     const minutes = Math.floor((ms % (60 * 60 * 1000)) / (60 * 1000));
-    
+
     if (hours > 0) {
         return `${hours}h ${minutes}m remaining`;
     }
@@ -330,13 +497,13 @@ const formatBanTime = (ms: number) => {
 };
 
 useHead({
-    title: 'Chatroom - Conformity Gate',
+    title: "Chatroom - Conformity Gate",
     meta: [
         {
-            name: 'description',
-            content: 'Join the discussion about Stranger Things Episode 9'
-        }
-    ]
+            name: "description",
+            content: "Join the discussion about Stranger Things Episode 9",
+        },
+    ],
 });
 </script>
 

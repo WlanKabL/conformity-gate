@@ -4,6 +4,8 @@ export interface ChatMessage {
     content: string;
     timestamp: number;
     deleted?: boolean;
+    ip?: string;
+    userAgent?: string;
 }
 
 export interface UserBanStatus {

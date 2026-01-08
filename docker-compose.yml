@@ -2,7 +2,7 @@ services:
     nuxt:
         build: .
         ports:
-            - "8451:3000"
+            - "8455:3000"
         env_file:
             - .env
         volumes:

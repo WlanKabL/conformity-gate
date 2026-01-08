@@ -2,10 +2,13 @@ import { readFile, writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import { join } from "path";
 import { nanoid } from "nanoid";
+import jwt from "jsonwebtoken";
 import type { ChatMessage } from "~/types/chat";
 import { BAD_WORDS } from "~/types/chat";
 
 const MESSAGES_FILE = join(process.cwd(), "data", "messages.json");
+const BANNED_USERS_FILE = join(process.cwd(), "data", "banned-users.json");
+const BANNED_IPS_FILE = join(process.cwd(), "data", "banned-ips.json");
 const MAX_MESSAGES = 1000;
 
 async function ensureMessagesFile() {
@@ -17,6 +20,14 @@ async function ensureMessagesFile() {
 
     if (!existsSync(MESSAGES_FILE)) {
         await writeFile(MESSAGES_FILE, JSON.stringify([], null, 2));
+    }
+
+    if (!existsSync(BANNED_USERS_FILE)) {
+        await writeFile(BANNED_USERS_FILE, JSON.stringify([], null, 2));
+    }
+
+    if (!existsSync(BANNED_IPS_FILE)) {
+        await writeFile(BANNED_IPS_FILE, JSON.stringify([], null, 2));
     }
 }
 
@@ -30,6 +41,18 @@ async function saveMessages(messages: ChatMessage[]) {
     // Keep only last MAX_MESSAGES
     const trimmed = messages.slice(-MAX_MESSAGES);
     await writeFile(MESSAGES_FILE, JSON.stringify(trimmed, null, 2));
+}
+
+async function loadBannedUsers(): Promise<string[]> {
+    await ensureMessagesFile();
+    const content = await readFile(BANNED_USERS_FILE, "utf-8");
+    return JSON.parse(content);
+}
+
+async function loadBannedIPs(): Promise<string[]> {
+    await ensureMessagesFile();
+    const content = await readFile(BANNED_IPS_FILE, "utf-8");
+    return JSON.parse(content);
 }
 
 function containsBadWord(text: string): boolean {
@@ -50,12 +73,61 @@ export default defineEventHandler(async (event) => {
         });
     }
 
+    // Extract IP address for tracking and banning
+    const ip =
+        getRequestHeader(event, "x-forwarded-for")?.split(",")[0].trim() ||
+        getRequestHeader(event, "x-real-ip") ||
+        event.node.req.socket.remoteAddress ||
+        "unknown";
+
+    // Check if username is banned
+    const bannedUsers = await loadBannedUsers();
+    if (bannedUsers.includes(body.username.toLowerCase())) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: "USER_BANNED",
+        });
+    }
+
+    // Check if IP is banned
+    const bannedIPs = await loadBannedIPs();
+    if (bannedIPs.includes(ip)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: "IP_BANNED",
+        });
+    }
+
     // Validate username
     if (body.username.length < 2 || body.username.length > 20) {
         throw createError({
             statusCode: 400,
             statusMessage: "Username must be between 2 and 20 characters",
         });
+    }
+
+    // Block developer username unless admin
+    if (body.username.toLowerCase().includes("wlankabl")) {
+        const jwtSecret = process.env.JWT_SECRET || "conformity-gate-secret";
+        const authHeader = getRequestHeader(event, "authorization");
+        const token = authHeader?.replace("Bearer ", "") || body.adminToken;
+
+        let isAdmin = false;
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, jwtSecret) as { admin: boolean };
+                isAdmin = decoded.admin === true;
+            } catch (error) {
+                // Invalid token
+            }
+        }
+
+        if (!isAdmin) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: "This username is reserved for the developer",
+            });
+        }
     }
 
     // Validate content
@@ -83,12 +155,16 @@ export default defineEventHandler(async (event) => {
             content: body.content.trim(),
             timestamp: Date.now(),
             deleted: false,
+            ip: ip,
+            userAgent: getRequestHeader(event, "user-agent") || "unknown",
         };
 
         messages.push(newMessage);
         await saveMessages(messages);
 
-        return newMessage;
+        // Return message without sensitive metadata
+        const { ip: _, userAgent: __, ...publicMessage } = newMessage;
+        return publicMessage;
     } catch (error) {
         console.error("Error saving message:", error);
         throw createError({

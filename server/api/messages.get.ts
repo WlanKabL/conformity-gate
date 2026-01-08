@@ -27,17 +27,25 @@ async function loadMessages(): Promise<ChatMessage[]> {
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const since = query.since as string | undefined;
+    const before = query.before as string | undefined;
     const limit = parseInt(query.limit as string) || 100;
 
     try {
         const messages = await loadMessages();
 
-        // Filter by since ID if provided
         let filteredMessages = messages;
+
         if (since) {
+            // Get messages AFTER this ID (for polling newer messages)
             const sinceIndex = messages.findIndex((m) => m.id === since);
             if (sinceIndex !== -1) {
                 filteredMessages = messages.slice(sinceIndex + 1);
+            }
+        } else if (before) {
+            // Get messages BEFORE this ID (for loading older messages)
+            const beforeIndex = messages.findIndex((m) => m.id === before);
+            if (beforeIndex !== -1) {
+                filteredMessages = messages.slice(0, beforeIndex);
             }
         }
 
@@ -46,7 +54,7 @@ export default defineEventHandler(async (event) => {
 
         return {
             messages: result,
-            hasMore: messages.length > limit && !since,
+            hasMore: before ? filteredMessages.length > limit : messages.length > result.length,
             total: messages.length,
         };
     } catch (error) {

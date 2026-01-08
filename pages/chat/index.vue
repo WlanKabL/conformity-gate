@@ -205,7 +205,7 @@ const loadMessages = async (loadOlder = false) => {
         const params: any = { limit: 100 };
         
         if (loadOlder && messages.value.length > 0) {
-            params.since = messages.value[0].id;
+            params.before = messages.value[0].id;
         }
 
         const response = await $fetch('/api/messages', { params });

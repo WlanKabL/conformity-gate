@@ -50,7 +50,6 @@
                     <CountdownDisplay
                         v-if="!countdownEnded"
                         :targetDate="targetDate"
-                        @countdownEnd="handleCountdownEnd"
                     />
                     <ResultDisplay v-else :status="episodeStatus" />
                 </div>
@@ -69,27 +68,6 @@ const targetDate = new Date("2026-01-08T02:00:00").getTime();
 
 // Computed: Check if countdown has ended
 const countdownEnded = computed(() => new Date().getTime() >= targetDate);
-
-const handleCountdownEnd = async () => {
-    // Fetch episode status from API
-    await fetchEpisodeStatus();
-};
-
-const fetchEpisodeStatus = async () => {
-    try {
-        const response = await fetch("/episode-status.json");
-        const data = await response.json();
-        episodeStatus.value = data.released;
-    } catch (error) {
-        console.error("Failed to fetch episode status:", error);
-        episodeStatus.value = null; // Show waiting state on error
-    }
-};
-
-// If countdown already ended, fetch status immediately
-if (countdownEnded.value) {
-    fetchEpisodeStatus();
-}
 
 onMounted(() => {
     // Konami Code Easter Egg

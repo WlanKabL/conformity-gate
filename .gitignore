@@ -25,6 +25,7 @@ logs
 
 # Chat data
 data/messages.json
+public/episode-status.json
 
 # ESLint
 .eslintcache

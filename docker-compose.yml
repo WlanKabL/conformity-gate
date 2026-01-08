@@ -5,4 +5,7 @@ services:
             - "8451:3000"
         env_file:
             - .env
+        volumes:
+            - ./data:/app/data
+            - ./public/episode-status.json:/app/public/episode-status.json
         restart: unless-stopped

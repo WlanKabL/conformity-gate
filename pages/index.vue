@@ -62,7 +62,7 @@
 <script setup lang="ts">
 const lightningCanvas = ref<HTMLCanvasElement | null>(null);
 const titleElement = ref<HTMLElement | null>(null);
-const episodeStatus = ref<string | false | null>(null);
+const episodeStatus = ref<string | false | null>(false);
 
 // 8. Januar 2026, 02:00 Uhr (Deine Zeitzone - CET/CEST)
 const targetDate = new Date("2026-01-08T02:00:00").getTime();
@@ -77,7 +77,7 @@ const handleCountdownEnd = async () => {
 
 const fetchEpisodeStatus = async () => {
     try {
-        const response = await fetch("/api/episode-status");
+        const response = await fetch("/episode-status.json");
         const data = await response.json();
         episodeStatus.value = data.released;
     } catch (error) {
